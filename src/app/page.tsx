@@ -1,101 +1,152 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Moon, Sun, Plus, Send } from "lucide-react";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface Thread {
+  id: string;
+  title: string;
+  lastMessage: string;
+  createdAt: Date;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [threads, setThreads] = useState<Thread[]>([
+    {
+      id: "1",
+      title: "新しいチャット",
+      lastMessage: "ChatGPTへようこそ",
+      createdAt: new Date(),
+    },
+  ]);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const newMessage: Message = {
+      role: "user",
+      content: input.trim(),
+    };
+
+    setMessages([...messages, newMessage]);
+    setInput("");
+    
+    setTimeout(() => {
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: "申し訳ありませんが、現在APIとの連携が実装されていません。",
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    }, 1000);
+  };
+
+  if (!mounted) return null;
+
+  return (
+    <div className="flex h-screen bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      {/* サイドバー */}
+      <div className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        {/* 新規チャットボタン */}
+        <button className="flex items-center gap-2 m-3 p-3 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <Plus size={16} />
+          新しいチャット
+        </button>
+
+        {/* スレッド一覧 */}
+        <div className="flex-1 overflow-y-auto">
+          {threads.map((thread) => (
+            <div
+              key={thread.id}
+              className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            >
+              <div className="text-sm font-medium truncate">{thread.title}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {thread.lastMessage}
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* テーマ切り替えボタン */}
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="m-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+
+      {/* メインチャットエリア */}
+      <div className="flex-1 flex flex-col">
+        {/* チャットヘッダー */}
+        <header className="border-b border-gray-200 dark:border-gray-700 p-4">
+          <h1 className="text-xl font-bold">ChatGPT</h1>
+        </header>
+
+        {/* メッセージ一覧 */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center text-gray-500 dark:text-gray-400">
+                <h2 className="text-2xl font-bold mb-2">ChatGPTへようこそ</h2>
+                <p>メッセージを入力してください</p>
+              </div>
+            </div>
+          ) : (
+            messages.map((message, index) => (
+              <div key={index} className="flex gap-4 max-w-3xl mx-auto">
+                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  {message.role === "user" ? "U" : "AI"}
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium mb-1">
+                    {message.role === "user" ? "You" : "Assistant"}
+                  </div>
+                  <div className="prose dark:prose-invert">
+                    {message.content}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* 入力フォーム */}
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="メッセージを入力..."
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <Send size={20} />
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
