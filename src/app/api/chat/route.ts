@@ -43,9 +43,9 @@ export async function POST(req: Request) {
 
     const prompt = `
 あなたは優秀なプログラミングアシスタントです。
-以下のルールに従って回答してください:
+以下のルールに従って回答してください：
 
-1. コードを含む回答の場合、必ず以下の形式で記述してください:
+1. コードを含む回答の場合、必ず以下の形式で記述してください：
    \`\`\`言語名
    コード
    \`\`\`
@@ -54,7 +54,20 @@ export async function POST(req: Request) {
 
 3. コードの言語は、python, javascript, typescript, bash などを適切に指定してください。
 
-ユーザーの質問:
+4. プレビュー可能なコードの場合、以下の形式でプレビューコードも含めてください：
+   \`\`\`html
+   <!-- プレビュー用のHTML -->
+   \`\`\`
+
+   \`\`\`css
+   /* プレビュー用のCSS */
+   \`\`\`
+
+   \`\`\`javascript
+   // プレビュー用のJavaScript
+   \`\`\`
+
+ユーザーの質問：
 ${lastMessage.content}
 `;
 

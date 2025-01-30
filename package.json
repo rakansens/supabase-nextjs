@@ -13,6 +13,7 @@
     "@auth/nextjs": "^0.0.0-380f8d56",
     "@google/generative-ai": "^0.21.0",
     "@monaco-editor/react": "^4.6.0",
+    "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-tabs": "^1.1.2",
     "@supabase/auth-helpers-nextjs": "^0.10.0",

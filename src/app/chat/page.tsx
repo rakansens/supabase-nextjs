@@ -1,6 +1,3 @@
-page.tsx:72 Error sending message: Error: Failed to generate response
-    at handleSubmit (page.tsx:61:15)
-handleSubmit	@	page.tsx:72
 "use client";
 
 import { useState, useRef, useEffect } from "react";
