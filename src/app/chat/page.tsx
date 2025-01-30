@@ -1,3 +1,6 @@
+page.tsx:72 Error sending message: Error: Failed to generate response
+    at handleSubmit (page.tsx:61:15)
+handleSubmit	@	page.tsx:72
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -46,11 +49,12 @@ export default function ChatPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get response");
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `Error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
       const assistantMessage: Message = {
         id: uuidv4(),
         role: "assistant",
@@ -62,13 +66,14 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
-      // エラーメッセージを表示
       setMessages((prev) => [
         ...prev,
         {
           id: uuidv4(),
           role: "assistant",
-          content: "申し訳ありません。エラーが発生しました。もう一度お試しください。",
+          content: error instanceof Error 
+            ? `エラーが発生しました: ${error.message}` 
+            : "エラーが発生しました。もう一度お試しください。",
           createdAt: new Date(),
         },
       ]);

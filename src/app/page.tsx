@@ -54,17 +54,20 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input.trim() }),
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate response");
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `Error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.response,
+        content: data.content,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -72,7 +75,9 @@ export default function Home() {
       console.error("Error sending message:", error);
       const errorMessage: Message = {
         role: "assistant",
-        content: "申し訳ありません。エラーが発生しました。",
+        content: error instanceof Error 
+          ? `エラーが発生しました: ${error.message}` 
+          : "エラーが発生しました。もう一度お試しください。",
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
